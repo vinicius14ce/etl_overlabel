@@ -1,0 +1,68 @@
+
+
+CREATE MATERIALIZED VIEW dw.mv_giro_supabase
+TABLESPACE pg_default
+AS SELECT g.atualizacao,
+    g.estabelecimento_origem,
+    g.loja,
+    g.data_dt,
+    g.data_venda,
+        -- Regra de negócio: Inversão de sinal para devoluções/código SEA
+        CASE
+            WHEN g.codigo::text = 'SEA'::text THEN g.qtd_pecas * '-1'::integer
+            ELSE g.qtd_pecas
+        END AS qtd_pecas,
+    g.modelo_id,
+    g.modelo,
+    g.cor,
+    g.tam,
+    g.familia,
+    g.mix,
+    g.subgrupo,
+    g.marca,
+    g.perfil_modelo,
+    g.conferencia,
+    g.valor_unitario,
+    g.valor_liquido,
+    g.custo,
+    g.valor_total,
+    g.custo_total,
+    g.fator_markup,
+    g.pedido,
+    g.tipo,
+    g.operacao,
+    g.codigo,
+        -- Regra de negócio: Preenchimento de CFE nulo com o número do pedido
+        CASE
+            WHEN g.numero_cfe IS NULL THEN g.pedido
+            ELSE g.numero_cfe
+        END AS numero_cfe,
+    g.serie,
+    g.hora_emissao,
+    g.cod_vendedor,
+    g.nome_vendedor,
+    g.cliente_id,
+    g.cliente_nome,
+    g.uf,
+    g.cidade,
+    g.cfop_codigo,
+    g.valor_desconto,
+    g.promocao,
+    g.promo_atac,
+    g.promo_vare,
+    g.preco_off,
+    g.promo_off,
+    g.produto_de_troca, -- Mantido do Giro original
+        -- Regra de negócio: Flag de verificação de venda fechada
+        count(*) FILTER (WHERE g.operacao::text = 'VENDA FECHADA'::text) OVER (PARTITION BY g.pedido) > 0 AS tem_venda_fechada,
+        -- Regra de negócio: Tratamento de subcliente_id nulo ou menor que 1
+        CASE
+            WHEN g.subcliente_id::integer < 1 OR g.subcliente_id::integer IS NULL THEN g.cliente_id
+            ELSE g.subcliente_id
+        END AS subcliente_id,
+    row_number() OVER () AS mv_id
+   FROM dw.giro_50024 g
+WITH DATA;
+
+-- View indexes:
+CREATE UNIQUE INDEX idx_mv_supabase_unique_id ON dw.mv_giro_supabase USING btree (mv_id);

@@ -1,0 +1,31 @@
+-- dw.mv_estoque source
+
+CREATE MATERIALIZED VIEW dw.mv_estoque
+TABLESPACE pg_default
+AS SELECT atualizacao,
+    localizacao_id,
+    modelo_id,
+    loja,
+    familia,
+    modelo,
+    cor,
+    tamanho,
+    mix,
+    subgrupo,
+    fabricacao,
+    marca,
+    perfil_modelo,
+    estoque,
+    custo,
+    atacado,
+    varejo,
+    promo_atac,
+    promo_vare,
+    preco_off,
+    promo_off,
+    row_number() OVER () AS mv_id
+   FROM dw.estoque_50009 e
+WITH DATA;
+
+-- View indexes:
+CREATE UNIQUE INDEX idx_mv_estoque_unique_id ON dw.mv_estoque USING btree (mv_id);

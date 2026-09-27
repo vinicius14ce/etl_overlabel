@@ -1,0 +1,51 @@
+-- dw.mv_clientes source
+
+CREATE MATERIALIZED VIEW dw.mv_clientes
+TABLESPACE pg_default
+AS SELECT atualizacao,
+    cliente_id,
+    cliente_pai_id,
+    cliente_razaosocial,
+    cliente_nomefantasia,
+    cliente_bairro,
+    cliente_cidade,
+    cliente_uf,
+    cliente_latitude,
+    cliente_longitude,
+    representante_id,
+    vendedor_id,
+    cliente_status_bloq_ped,
+    cliente_status_bloq_nf,
+    cliente_status,
+    codigo_ibge,
+    cliente_tipo_empresa,
+    cliente_grupo,
+    cliente_grupo_id,
+    cliente_data_cadastro,
+    regiao_id,
+    cliente_situacao,
+    profissional_id,
+    cliente_corretor,
+    cliente_data_aniversario,
+    bairro_cidade_uf_pais,
+    cidade_uf_pais,
+    uf_pais,
+    pais,
+    colaborador_id,
+    cliente_colaborador_id,
+    cliente_observacao,
+    cliente_forma_pagamento,
+    cliente_condicao_pagamento,
+    cliente_limite_credito,
+    cliente_contato,
+    cliente_telefones,
+    cliente_email,
+    cliente_segmento,
+    cliente_magazine,
+    cliente_disposicao,
+    row_number() OVER () AS id
+   FROM dw.tb_cliente
+WITH DATA;
+
+-- View indexes:
+CREATE UNIQUE INDEX idx_mv_clientes_unique_id ON dw.mv_clientes USING btree (id);

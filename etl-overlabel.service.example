@@ -1,0 +1,13 @@
+[Unit]
+Description=ETL Overlabel - scheduler
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/vinicius/projects/etl_overlabel
+ExecStart=/home/vinicius/projects/etl_overlabel/.venv/bin/python scheduler.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
