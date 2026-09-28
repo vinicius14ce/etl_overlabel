@@ -296,3 +296,4 @@ Logs detalhados em `logs/`. Cada pipeline escreve seu próprio arquivo. Erros de
 **Versão:** 1.0  
 **Última atualização:** 2026-09-27  
 **Autor:** Claude Haiku 4.5
+
